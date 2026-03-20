@@ -13,6 +13,44 @@ Served websites can be managed through SFTP access (more on this later) and are 
 
 The activation of a tenant can be asked to the [admin](mailto:antonino.furnari@unict.it).
 
+### Grav Websites
+Tenants support Grav websites, but they need to be configured properly by telling Grav which directory they are installed in.
+
+If they are in a subdir of the tenant, the `/user/config/system.yaml` file should contain these:
+
+```yaml
+absolute_urls: false
+custom_base_url: '/tenant/subdir'
+
+session:
+  path: '/tenant/subdir'
+
+home:
+  redirect: false
+
+pages:
+  redirect_trailing_slash: 0
+```
+
+If it is installed directly in `/tenant/`, the `/user/config/system.yaml` file should contain:
+
+```yaml
+absolute_urls: false
+custom_base_url: '/tenant'
+
+session:
+  path: '/tenant'
+
+home:
+  redirect: false
+
+pages:
+  redirect_trailing_slash: 0
+```
+
+### Email Service
+Mailing is disabled within the tenants for security reasons. However, a service to send emails is available at port 4321 on the internal IP. An account can be asked to the [admin](mailto:antonino.furnari@unict.it).
+
 ## Legacy Web Service
 Besides the standard web service, IPLAB provides a **legacy web service** for archiving static websites and basic PHP applications that no longer require updates. For enhanced security, the filesystem is mounted **read-only** (`:ro`) in the Nginx container, preventing unauthorized modifications while serving content efficiently. These sites are accessible at `iplab.dmi.unict.it/legacy/...`, with **permanent 301 redirects** from their original root URLs (e.g., `/oldproject` → `/legacy/oldproject/`)—add directories to `/srv/tenants/legacy/` and run the auto-script for instant mapping.
 
