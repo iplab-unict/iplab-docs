@@ -1,0 +1,30 @@
+name: Deploy Static Docs to IPLAB
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup SSH Key
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        # Ensure this secret name matches what you created in GitHub Settings
+        ssh-private-key: ${{ secrets.DEPLOY_KEY_DOCS }}
+
+    - name: Add Server to Known Hosts
+      run: |
+        mkdir -p ~/.ssh
+        ssh-keyscan -H 151.97.252.83 >> ~/.ssh/known_hosts
+
+    - name: Deploy via rsync
+      run: |
+        # This copies the contents of your local docs/ folder 
+        # to the server's /srv/docs/ folder.
+        # Use 'docs/' (with slash) to copy the contents, not the folder itself.
+        rsync -avz --delete docs/ iplab-deploy@151.97.252.83:/
