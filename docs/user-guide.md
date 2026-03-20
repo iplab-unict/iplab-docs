@@ -14,9 +14,9 @@ Served websites can be managed through SFTP access (more on this later) and are 
 The activation of a tenant can be asked to the [admin](mailto:antonino.furnari@unict.it).
 
 ### Grav Websites
-Tenants support Grav websites, but they need to be configured properly by telling Grav which directory they are installed in.
+Tenants support Grav websites (older tenants may need an upgrade - to fix that contact the [admin](mailto:antonino.furnari@unict.it), but they need to be configured properly by telling Grav which directory they are installed in.
 
-If they are in a subdir of the tenant, the `/user/config/system.yaml` file should contain these:
+Currently, grav websites are supported in subdirs, not in the root directory of the tenant. Please configure the `/user/config/system.yaml` to include the following information:
 
 ```yaml
 absolute_urls: false
@@ -24,22 +24,6 @@ custom_base_url: '/tenant/subdir'
 
 session:
   path: '/tenant/subdir'
-
-home:
-  redirect: false
-
-pages:
-  redirect_trailing_slash: 0
-```
-
-If it is installed directly in `/tenant/`, the `/user/config/system.yaml` file should contain:
-
-```yaml
-absolute_urls: false
-custom_base_url: '/tenant'
-
-session:
-  path: '/tenant'
 
 home:
   redirect: false
