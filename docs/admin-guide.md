@@ -3,7 +3,7 @@
 **Admin Only**: For managing the Ubuntu VM web server (Nginx + Docker sandboxing). Contact: [antonino.furnari@unict.it](mailto:antonino.furnari@unict.it).
 
 ## Overview
-Single host Nginx reverse proxy/TLS → Docker containers. Data: `/srv` (950GB). Configs: `/opt/lab-services`. Public: `iplab.dmi.unict.it` → `127.0.0.1:<port>` or legacy `192.168.90.55:8201`.[web:16]
+Single host Nginx reverse proxy/TLS → Docker containers. Data: `/srv` (950GB). Configs: `/opt/lab-services`. Public: `iplab.dmi.unict.it` → `127.0.0.1:<port>` or legacy `192.168.90.55:8201`.
 
 ## Filesystem
 ```
