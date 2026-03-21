@@ -16,7 +16,7 @@ The activation of a tenant can be asked to the [admin](mailto:antonino.furnari@u
 ### Grav Websites
 Tenants support Grav websites (older tenants may need an upgrade - to fix that contact the [admin](mailto:antonino.furnari@unict.it), but they need to be configured properly by telling Grav which directory they are installed in.
 
-Currently, grav websites are supported in subdirs, not in the root directory of the tenant. Please configure the `/user/config/system.yaml` to include the following information:
+Grav websites are supported only in subdirs, not in the root directory of the tenant. Please configure the `/user/config/system.yaml` to include the following information:
 
 ```yaml
 absolute_urls: false
@@ -30,6 +30,36 @@ home:
 
 pages:
   redirect_trailing_slash: 0
+```
+
+If you want your website to be served from the root directory of the tenant, you may place it in a subdir (e.g., `site`) and place the following index.php in the root directory of the tenant:
+
+```php
+<?php
+/**
+ * Redirects /tentant/ to /tenant/site/
+ */
+$uri = $_SERVER['REQUEST_URI'];
+$path = parse_url($uri, PHP_URL_PATH);
+
+// If the browser hits the bare /tenant/ (which Nginx sees as /)
+if ($path == '/' || $path == '/index.php') {
+    header('Location: /tenant/site/', true, 301);
+    exit;
+}
+
+// Otherwise, if the URI points to a physical folder (like /site/ or /site2/),
+// let the specific Grav instance handle it.
+$segments = explode('/', trim($path, '/'));
+$target = $segments[0];
+
+if (!empty($target) && is_dir(__DIR__ . '/' . $target)) {
+    require __DIR__ . '/' . $target . '/index.php';
+} else {
+    // Default fallback if someone types a non-existent path
+    header('Location: /tenant/site/', true, 301);
+    exit;
+}
 ```
 
 ### Email Service
