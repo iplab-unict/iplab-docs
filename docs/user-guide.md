@@ -14,16 +14,16 @@ Served websites can be managed through SFTP access (more on this later) and are 
 The activation of a tenant can be asked to the [admin](mailto:antonino.furnari@unict.it).
 
 ### Grav Websites
-Tenants support Grav websites (older tenants may need an upgrade - to fix that contact the [admin](mailto:antonino.furnari@unict.it), but they need to be configured properly by telling Grav which directory they are installed in.
+By default, tenants do not support Grav websites. To enable Grav support or add a new tenant with Grav support, please contact the [admin](mailto:antonino.furnari@unict.it).
 
-Grav websites are supported only in subdirs, not in the root directory of the tenant. Please configure the `/user/config/system.yaml` to include the following information:
+Once the tenant is enabled, please add your website in the root directory of your tenant and configure it properly by telling Grav which directory it is installed in. This is done by adding the following lines to the `/user/config/system.yaml`:
 
 ```yaml
 absolute_urls: false
-custom_base_url: '/tenant/subdir'
+custom_base_url: '/tenant'
 
 session:
-  path: '/tenant/subdir'
+  path: '/tenant'
 
 home:
   redirect: false
@@ -32,33 +32,29 @@ pages:
   redirect_trailing_slash: 0
 ```
 
-If you want your website to be served from the root directory of the tenant, you may place it in a subdir (e.g., `site`) and place the following index.php in the root directory of the tenant:
+If you want to add additional grav websites in subdirectories of your tenant, you can do so and configure them properly by telling Grav which directory it is installed in. This is done by adding the following lines to the `/user/config/system.yaml`:
 
-```php
-<?php
-/**
- * Redirects /tentant/ to /tenant/site/
- */
-$uri = $_SERVER['REQUEST_URI'];
-$path = parse_url($uri, PHP_URL_PATH);
 
-// If the browser hits the bare /tenant/ (which Nginx sees as /)
-if ($path == '/' || $path == '/index.php') {
-    header('Location: /tenant/site/', true, 301);
-    exit;
-}
+```yaml
+absolute_urls: false
+custom_base_url: '/tenant/subsite'
 
-// Otherwise, if the URI points to a physical folder (like /site/ or /site2/),
-// let the specific Grav instance handle it.
-$segments = explode('/', trim($path, '/'));
-$target = $segments[0];
+session:
+  path: '/tenant/subsite'
 
-if (!empty($target) && is_dir(__DIR__ . '/' . $target)) {
-    require __DIR__ . '/' . $target . '/index.php';
-} else {
-    // Default fallback if someone types a non-existent path
-    header('Location: /tenant/site/', true, 301);
-    exit;
+home:
+  redirect: false
+
+pages:
+  redirect_trailing_slash: 0
+```
+
+After this is done, please ask the [admin](mailto:antonino.furnari@unict.it) to configure the tenant for the new subsite by adding the following block in the corresponding nginx configuration file:
+
+```
+location /subsite/ {
+    # Try literal file, then folder, then fall back to the SUBSITE'S index.php
+    try_files $uri $uri/ /subsite/index.php?$query_string;
 }
 ```
 
